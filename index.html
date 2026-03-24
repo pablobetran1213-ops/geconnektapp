@@ -948,6 +948,60 @@
     .post-action:hover { color: var(--text-primary); }
     .post-action.liked { color: #e0245e; }
     .post-action.reposted { color: #e0245e; }
+    /* Attended / concert history */
+    .attended-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .attended-btn.active {
+      background: #1a3a1a;
+      border-color: #2ecc40;
+      color: #2ecc40;
+    }
+    .concert-hist-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 14px 0 8px;
+      border-top: 1px solid var(--border);
+      margin-top: 10px;
+    }
+    .concert-hist-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .concert-hist-emoji {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .concert-hist-info { flex: 1; }
+    .concert-hist-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+    .concert-hist-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
     /* Reposts section on profile */
     .repost-section-title {
       font-size: 13px;
@@ -1117,6 +1171,9 @@
         </div>
         <p class="detail-desc" id="detail-description"></p>
         <a class="detail-ticket-link" id="detail-ticket-link" href="#" target="_blank">🎟 Acheter mon billet</a>
+        <button class="attended-btn" id="detail-attended-btn" onclick="toggleAttended()">
+          <span id="attended-icon">🎫</span> <span id="attended-label">J'y étais !</span>
+        </button>
       </div>
       <div class="bottom-nav">
         <div class="nav-item" onclick="showScreen('screen-feed')">
@@ -1252,6 +1309,10 @@
             <span class="pref-chip">Électro</span>
             <span class="pref-chip">Pop</span>
           </div>
+        </div>
+        <div id="profile-concerts">
+          <div class="concert-hist-title">🎤 Mes concerts</div>
+          <div id="profile-concerts-list"></div>
         </div>
         <div id="profile-reposts" style="display:none">
           <div class="repost-section-title">🔁 Mes reposts</div>
@@ -2579,6 +2640,43 @@
       }
     }
 
+    function toggleAttended() {
+      const id = currentEventId;
+      if (!id) return;
+      let attended = JSON.parse(localStorage.getItem('myAttended') || '[]');
+      const idx = attended.indexOf(id);
+      const isNow = idx === -1;
+      if (isNow) attended.push(id); else attended.splice(idx, 1);
+      localStorage.setItem('myAttended', JSON.stringify(attended));
+      const btn = document.getElementById('detail-attended-btn');
+      const icon = document.getElementById('attended-icon');
+      const label = document.getElementById('attended-label');
+      btn.classList.toggle('active', isNow);
+      icon.textContent = isNow ? '✅' : '🎫';
+      label.textContent = isNow ? 'Concert enregistré !' : "J'y étais !";
+      loadConcerts();
+    }
+
+    function loadConcerts() {
+      const attended = JSON.parse(localStorage.getItem('myAttended') || '[]');
+      const list = document.getElementById('profile-concerts-list');
+      if (!list) return;
+      list.innerHTML = '';
+      attended.forEach(id => {
+        const ev = EVENTS.find(e => e.id === id);
+        if (!ev) return;
+        const div = document.createElement('div');
+        div.className = 'concert-hist-item';
+        div.onclick = () => showDetail(id);
+        div.innerHTML = `<div class="concert-hist-emoji" style="background:${ev.gradient || 'linear-gradient(135deg,#111,#333)'}">${ev.emoji || '🎵'}</div>
+          <div class="concert-hist-info">
+            <div class="concert-hist-name">${escHtml(ev.title)}</div>
+            <div class="concert-hist-meta">${ev.day} ${ev.month} 2026 · ${escHtml(ev.venue)}</div>
+          </div>`;
+        list.appendChild(div);
+      });
+    }
+
     function toggleLike(el) {
       const isLiked = el.classList.toggle('liked');
       const span = el.querySelector('span');
@@ -2597,9 +2695,18 @@
     function renderEvents() {
       const container = document.getElementById('events-container');
       if (!container) return;
-      const monthOrder = ['Mars','Avril','Mai','Juin','Juillet','Août'];
+      const monthOrder = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+      const monthNum = { 'Janvier':1,'Février':2,'Mars':3,'Avril':4,'Mai':5,'Juin':6,'Juillet':7,'Août':8,'Septembre':9,'Octobre':10,'Novembre':11,'Décembre':12 };
+      const now = Date.now();
+      // Hide events where end (midnight day+1) + 24h < now
+      const visible = EVENTS.filter(e => {
+        const m = monthNum[e.month];
+        if (!m) return true;
+        const end = new Date(2026, m - 1, parseInt(e.day) + 1, 0, 0, 0).getTime() + 24*60*60*1000;
+        return end > now;
+      });
       const monthMap = {};
-      EVENTS.forEach(event => {
+      visible.forEach(event => {
         if (!monthMap[event.month]) monthMap[event.month] = [];
         monthMap[event.month].push(event);
       });
@@ -2679,6 +2786,17 @@
           ticketLink.style.display = 'none';
         }
       }
+      // Attended button state
+      const attended = JSON.parse(localStorage.getItem('myAttended') || '[]');
+      const isAttended = attended.includes(id);
+      const btn = document.getElementById('detail-attended-btn');
+      const icon = document.getElementById('attended-icon');
+      const label = document.getElementById('attended-label');
+      if (btn) {
+        btn.classList.toggle('active', isAttended);
+        icon.textContent = isAttended ? '✅' : '🎫';
+        label.textContent = isAttended ? 'Concert enregistré !' : "J'y étais !";
+      }
       showScreen('screen-detail');
     }
 
@@ -2687,7 +2805,12 @@
       el.classList.add('active');
     }
 
+    // Pre-populate Fares as attended (example)
+    if (!localStorage.getItem('myAttended')) {
+      localStorage.setItem('myAttended', JSON.stringify(['fares-kugler']));
+    }
     renderEvents();
+    loadConcerts();
     showScreen('screen-home');
   </script>
 </body>
