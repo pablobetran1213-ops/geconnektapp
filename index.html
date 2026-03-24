@@ -947,6 +947,38 @@
     }
     .post-action:hover { color: var(--text-primary); }
     .post-action.liked { color: #e0245e; }
+    .post-action.reposted { color: #e0245e; }
+    /* Reposts section on profile */
+    .repost-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 14px 0 8px;
+      border-top: 1px solid var(--border);
+      margin-top: 10px;
+    }
+    .repost-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .repost-item-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .repost-item-author { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+    .repost-item-text { font-size: 12px; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; }
 
     /* ===== Notifications — grouped ===== */
     .notif-group-label {
@@ -1221,6 +1253,10 @@
             <span class="pref-chip">Pop</span>
           </div>
         </div>
+        <div id="profile-reposts" style="display:none">
+          <div class="repost-section-title">🔁 Mes reposts</div>
+          <div id="profile-reposts-list"></div>
+        </div>
         <div class="profile-section">
           <div class="profile-row">
             <div class="profile-row-left">
@@ -1408,7 +1444,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span>93</span>
             </div>
-            <div class="post-action">
+            <div class="post-action" onclick="toggleRepost(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
               <span>214</span>
             </div>
@@ -1436,7 +1472,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span>47</span>
             </div>
-            <div class="post-action">
+            <div class="post-action" onclick="toggleRepost(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
               <span>88</span>
             </div>
@@ -1463,7 +1499,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span>29</span>
             </div>
-            <div class="post-action">
+            <div class="post-action" onclick="toggleRepost(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
               <span>143</span>
             </div>
@@ -1491,7 +1527,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span>34</span>
             </div>
-            <div class="post-action">
+            <div class="post-action" onclick="toggleRepost(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
               <span>67</span>
             </div>
@@ -1519,7 +1555,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span>21</span>
             </div>
-            <div class="post-action">
+            <div class="post-action" onclick="toggleRepost(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
               <span>55</span>
             </div>
@@ -1547,7 +1583,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span>58</span>
             </div>
-            <div class="post-action">
+            <div class="post-action" onclick="toggleRepost(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
               <span>119</span>
             </div>
@@ -2509,6 +2545,37 @@
           const navItems = nav.querySelectorAll('.nav-item');
           if (navItems[idx]) navItems[idx].classList.add('active');
         });
+      }
+    }
+
+    function toggleRepost(el) {
+      const isReposted = el.classList.toggle('reposted');
+      const span = el.querySelector('span');
+      const n = parseInt(span.textContent);
+      span.textContent = isReposted ? n + 1 : n - 1;
+
+      const card = el.closest('.post-card');
+      const author = card.querySelector('.post-username').textContent;
+      const avatar = card.querySelector('.post-avatar').textContent;
+      const text = card.querySelector('.post-text').textContent.trim().substring(0, 80) + '…';
+      const postId = author + '_repost';
+
+      const list = document.getElementById('profile-reposts-list');
+      const section = document.getElementById('profile-reposts');
+
+      if (isReposted) {
+        const item = document.createElement('div');
+        item.className = 'repost-item';
+        item.id = postId;
+        item.innerHTML = `<div class="repost-item-avatar">${avatar}</div>
+          <div><div class="repost-item-author">${author}</div>
+          <div class="repost-item-text">${text}</div></div>`;
+        list.appendChild(item);
+        section.style.display = 'block';
+      } else {
+        const item = document.getElementById(postId);
+        if (item) item.remove();
+        if (!list.children.length) section.style.display = 'none';
       }
     }
 
