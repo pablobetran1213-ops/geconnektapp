@@ -2383,8 +2383,10 @@
       const navMap = { 'screen-home': 1, 'screen-wallet': 2, 'screen-profile': 3, 'screen-feed': 0 };
       const idx = navMap[id];
       if (idx !== undefined) {
-        const navItems = document.querySelectorAll('.bottom-nav')[0]?.querySelectorAll('.nav-item');
-        if (navItems && navItems[idx]) navItems[idx].classList.add('active');
+        document.querySelectorAll('.bottom-nav').forEach(nav => {
+          const navItems = nav.querySelectorAll('.nav-item');
+          if (navItems[idx]) navItems[idx].classList.add('active');
+        });
       }
     }
 
