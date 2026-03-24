@@ -881,46 +881,72 @@
     .profile-row-arrow { color: var(--text-muted); font-size: 20px; }
 
     /* ===== Feed items ===== */
-    .feed-item {
-      background: var(--card-bg);
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      margin-bottom: 12px;
+    /* ===== Social feed posts ===== */
+    .post-card {
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px 12px;
     }
-    .feed-item-banner {
-      height: 130px;
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--red);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 52px;
+      font-size: 18px;
+      flex-shrink: 0;
     }
-    .feed-item-body-wrap { padding: 12px 14px 0; }
-    .feed-item-category {
-      font-size: 10px;
+    .post-username { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+    .post-time { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+    .post-tag {
+      font-size: 11px;
       font-weight: 700;
       color: var(--red);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
     }
-    .feed-item-title {
-      font-size: 15px;
-      font-weight: 800;
+    .post-text {
+      font-size: 14px;
+      line-height: 1.55;
       color: var(--text-primary);
-      margin-bottom: 4px;
+      margin-bottom: 12px;
     }
-    .feed-item-subtitle { font-size: 13px; color: var(--text-secondary); }
-    .feed-item-footer {
+    .post-image {
+      width: 100%;
+      border-radius: 14px;
+      height: 180px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 8px 14px 12px;
-      border-top: 1px solid var(--border);
-      margin-top: 10px;
+      justify-content: center;
+      font-size: 64px;
+      margin-bottom: 12px;
+      overflow: hidden;
     }
-    .feed-item-time { font-size: 11px; color: var(--text-muted); }
-    .feed-item-read { font-size: 11px; font-weight: 700; color: var(--red); cursor: pointer; }
+    .post-actions {
+      display: flex;
+      gap: 22px;
+      color: var(--text-muted);
+      font-size: 13px;
+      padding-top: 2px;
+    }
+    .post-action {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s;
+    }
+    .post-action:hover { color: var(--text-primary); }
+    .post-action.liked { color: #e0245e; }
 
     /* ===== Notifications — grouped ===== */
     .notif-group-label {
@@ -1359,79 +1385,175 @@
         <div class="chip">Artistes GE</div>
         <div class="chip">Festivals</div>
       </div>
-      <div class="content" id="feed-content">
-        <div class="feed-item">
-          <div class="feed-item-banner" style="background:linear-gradient(135deg,#1a0a2e,#4a0080)">🎪</div>
-          <div class="feed-item-body-wrap">
-            <div class="feed-item-category">Festivals</div>
-            <div class="feed-item-title">Paléo Festival 2026 : le programme complet</div>
-            <div class="feed-item-subtitle">Gorillaz, Orelsan, Katy Perry, Top et Lorde confirmés</div>
+      <div class="content" id="feed-content" style="padding:0;">
+
+        <!-- Post 1 -->
+        <div class="post-card">
+          <div class="post-header">
+            <div class="post-avatar">🎪</div>
+            <div>
+              <div class="post-username">Ge Connekt</div>
+              <div class="post-time">Il y a 2h</div>
+            </div>
           </div>
-          <div class="feed-item-footer">
-            <span class="feed-item-time">Il y a 2h</span>
-            <span class="feed-item-read">Lire →</span>
-          </div>
-        </div>
-        <div class="feed-item">
-          <div class="feed-item-banner" style="background:linear-gradient(135deg,#0d1a0d,#1a4a1a)">🎤</div>
-          <div class="feed-item-body-wrap">
-            <div class="feed-item-category">Artistes GE</div>
-            <div class="feed-item-title">Fares : BLOSSOM certifié disque d'or en Suisse</div>
-            <div class="feed-item-subtitle">Le rappeur genevois continue son ascension</div>
-          </div>
-          <div class="feed-item-footer">
-            <span class="feed-item-time">Il y a 1j</span>
-            <span class="feed-item-read">Lire →</span>
-          </div>
-        </div>
-        <div class="feed-item">
-          <div class="feed-item-banner" style="background:linear-gradient(135deg,#1a1a0d,#3a3a00)">🎵</div>
-          <div class="feed-item-body-wrap">
-            <div class="feed-item-category">Annonces</div>
-            <div class="feed-item-title">Genève Fête de la Musique 2026 : dates confirmées</div>
-            <div class="feed-item-subtitle">3 scènes gratuites dans la ville le 20 juin</div>
-          </div>
-          <div class="feed-item-footer">
-            <span class="feed-item-time">Il y a 2j</span>
-            <span class="feed-item-read">Lire →</span>
+          <div class="post-tag">Festivals</div>
+          <div class="post-text">🚨 Le programme du <strong>Paléo Festival 2026</strong> est officiel ! Gorillaz, Orelsan, Katy Perry, The Offspring et Lorde sur la Grande Scène. Nyon, 21–26 juillet. 🔥</div>
+          <div class="post-image" style="background:linear-gradient(135deg,#1a0a2e,#4a0080)">🎪</div>
+          <div class="post-actions">
+            <div class="post-action" onclick="toggleLike(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <span>847</span>
+            </div>
+            <div class="post-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>93</span>
+            </div>
+            <div class="post-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+              <span>214</span>
+            </div>
           </div>
         </div>
-        <div class="feed-item">
-          <div class="feed-item-banner" style="background:linear-gradient(135deg,#1a000d,#4a0028)">🏛</div>
-          <div class="feed-item-body-wrap">
-            <div class="feed-item-category">Annonces</div>
-            <div class="feed-item-title">L'Usine dévoile sa programmation d'été</div>
-            <div class="feed-item-subtitle">20+ artistes confirmés de juin à août</div>
+
+        <!-- Post 2 -->
+        <div class="post-card">
+          <div class="post-header">
+            <div class="post-avatar">🎤</div>
+            <div>
+              <div class="post-username">Ge Connekt</div>
+              <div class="post-time">Il y a 1j</div>
+            </div>
           </div>
-          <div class="feed-item-footer">
-            <span class="feed-item-time">Il y a 3j</span>
-            <span class="feed-item-read">Lire →</span>
-          </div>
-        </div>
-        <div class="feed-item">
-          <div class="feed-item-banner" style="background:linear-gradient(135deg,#001a1a,#004a4a)">🎸</div>
-          <div class="feed-item-body-wrap">
-            <div class="feed-item-category">Concerts</div>
-            <div class="feed-item-title">Hollywood Undead de retour à Genève en juin</div>
-            <div class="feed-item-subtitle">La formation américaine joue à l'Alhambra le 23 juin</div>
-          </div>
-          <div class="feed-item-footer">
-            <span class="feed-item-time">Il y a 4j</span>
-            <span class="feed-item-read">Lire →</span>
-          </div>
-        </div>
-        <div class="feed-item">
-          <div class="feed-item-banner" style="background:linear-gradient(135deg,#1a1200,#4a3600)">⭐</div>
-          <div class="feed-item-body-wrap">
-            <div class="feed-item-category">Festivals</div>
-            <div class="feed-item-title">Estivale Genève 2026 : Médine, Kendji et plus</div>
-            <div class="feed-item-subtitle">Festival en plein air le 1er août aux Eaux-Vives</div>
-          </div>
-          <div class="feed-item-footer">
-            <span class="feed-item-time">Il y a 5j</span>
-            <span class="feed-item-read">Lire →</span>
+          <div class="post-tag">Artistes GE</div>
+          <div class="post-text">🥇 <strong>Fares</strong> vient de faire certifier son album <em>BLOSSOM</em> disque d'or en Suisse. Le rappeur genevois continue son ascension, à suivre de près sur la scène locale. 🎶</div>
+          <div class="post-image" style="background:linear-gradient(135deg,#0d1a0d,#1a4a1a)">🎤</div>
+          <div class="post-actions">
+            <div class="post-action" onclick="toggleLike(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <span>512</span>
+            </div>
+            <div class="post-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>47</span>
+            </div>
+            <div class="post-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+              <span>88</span>
+            </div>
           </div>
         </div>
+
+        <!-- Post 3 -->
+        <div class="post-card">
+          <div class="post-header">
+            <div class="post-avatar">🎵</div>
+            <div>
+              <div class="post-username">Ge Connekt</div>
+              <div class="post-time">Il y a 2j</div>
+            </div>
+          </div>
+          <div class="post-tag">Annonces</div>
+          <div class="post-text">📅 C'est confirmé ! La <strong>Fête de la Musique 2026</strong> se tiendra le <strong>20 juin</strong> à Genève avec 3 scènes gratuites à travers la ville. Entrée libre pour tout le monde. 🎉</div>
+          <div class="post-actions">
+            <div class="post-action" onclick="toggleLike(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <span>388</span>
+            </div>
+            <div class="post-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>29</span>
+            </div>
+            <div class="post-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+              <span>143</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Post 4 -->
+        <div class="post-card">
+          <div class="post-header">
+            <div class="post-avatar">🏛</div>
+            <div>
+              <div class="post-username">Ge Connekt</div>
+              <div class="post-time">Il y a 3j</div>
+            </div>
+          </div>
+          <div class="post-tag">Annonces</div>
+          <div class="post-text">🗓 <strong>L'Usine</strong> dévoile sa programmation d'été avec 20+ artistes confirmés de juin à août. Du metal au jazz en passant par l'électro — un été chargé du côté des Bains. 🎛</div>
+          <div class="post-image" style="background:linear-gradient(135deg,#1a000d,#4a0028)">🏛</div>
+          <div class="post-actions">
+            <div class="post-action" onclick="toggleLike(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <span>276</span>
+            </div>
+            <div class="post-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>34</span>
+            </div>
+            <div class="post-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+              <span>67</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Post 5 -->
+        <div class="post-card">
+          <div class="post-header">
+            <div class="post-avatar">🎸</div>
+            <div>
+              <div class="post-username">Ge Connekt</div>
+              <div class="post-time">Il y a 4j</div>
+            </div>
+          </div>
+          <div class="post-tag">Concerts</div>
+          <div class="post-text">🤘 <strong>Hollywood Undead</strong> de retour à Genève ! La formation américaine jouera à <strong>L'Alhambra le 23 juin</strong>. Billets disponibles sur Petzi — places limitées. 🎫</div>
+          <div class="post-image" style="background:linear-gradient(135deg,#001a1a,#004a4a)">🎸</div>
+          <div class="post-actions">
+            <div class="post-action" onclick="toggleLike(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <span>193</span>
+            </div>
+            <div class="post-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>21</span>
+            </div>
+            <div class="post-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+              <span>55</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Post 6 -->
+        <div class="post-card">
+          <div class="post-header">
+            <div class="post-avatar">⭐</div>
+            <div>
+              <div class="post-username">Ge Connekt</div>
+              <div class="post-time">Il y a 5j</div>
+            </div>
+          </div>
+          <div class="post-tag">Festivals</div>
+          <div class="post-text">🌞 <strong>Estivale Genève 2026</strong> — Médine, Kendji Girac et d'autres artistes confirmés pour le festival en plein air du <strong>1er août aux Eaux-Vives</strong>. L'été genevois s'annonce chargé ! 🎶</div>
+          <div class="post-image" style="background:linear-gradient(135deg,#1a1200,#4a3600)">⭐</div>
+          <div class="post-actions">
+            <div class="post-action" onclick="toggleLike(this)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              <span>431</span>
+            </div>
+            <div class="post-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>58</span>
+            </div>
+            <div class="post-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+              <span>119</span>
+            </div>
+          </div>
+        </div>
+
       </div>
       <div class="bottom-nav">
         <div class="nav-item active" onclick="showScreen('screen-feed')">
@@ -2388,6 +2510,15 @@
           if (navItems[idx]) navItems[idx].classList.add('active');
         });
       }
+    }
+
+    function toggleLike(el) {
+      const isLiked = el.classList.toggle('liked');
+      const span = el.querySelector('span');
+      const n = parseInt(span.textContent);
+      span.textContent = isLiked ? n + 1 : n - 1;
+      const svg = el.querySelector('svg path');
+      if (svg) svg.setAttribute('fill', isLiked ? 'currentColor' : 'none');
     }
 
     function toggleTheme() {
