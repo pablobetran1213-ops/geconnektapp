@@ -949,6 +949,22 @@
     .post-action.liked { color: #e0245e; }
     .post-action.reposted { color: #e0245e; }
     /* Attended / concert history */
+    .add-calendar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .add-calendar-btn:active { border-color: var(--red); color: var(--red); }
     .attended-btn {
       width: 100%;
       margin-top: 12px;
@@ -1165,6 +1181,7 @@
             <div class="detail-info-text" id="detail-venue"></div>
           </div>
         </div>
+        <button class="add-calendar-btn" onclick="addToCalendar()">📅 Ajouter au calendrier</button>
         <div class="detail-price-row">
           <div class="detail-price" id="detail-price"></div>
           <span class="detail-avail-badge" id="detail-avail-badge"></span>
@@ -2638,6 +2655,41 @@
         if (item) item.remove();
         if (!list.children.length) section.style.display = 'none';
       }
+    }
+
+    function addToCalendar() {
+      const ev = EVENTS.find(e => e.id === currentEventId);
+      if (!ev) return;
+      const monthNum = { 'Janvier':'01','Février':'02','Mars':'03','Avril':'04','Mai':'05','Juin':'06',
+                         'Juillet':'07','Août':'08','Septembre':'09','Octobre':'10','Novembre':'11','Décembre':'12' };
+      const m = monthNum[ev.month] || '01';
+      const d = ev.day.padStart(2,'0');
+      const timeStr = (EVENT_TIMES[currentEventId] || '20h00').replace('h',':').padEnd(5,'0');
+      const [hh, mm] = timeStr.split(':').map(Number);
+      const pad = n => String(n).padStart(2,'0');
+      const dtStart = `2026${m}${d}T${pad(hh)}${pad(mm)}00`;
+      const endH = hh + 2 >= 24 ? hh : hh + 2;
+      const dtEnd   = `2026${m}${d}T${pad(endH)}${pad(mm)}00`;
+      const ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Ge Connekt//FR',
+        'BEGIN:VEVENT',
+        `DTSTART:${dtStart}`,
+        `DTEND:${dtEnd}`,
+        `SUMMARY:${ev.title}`,
+        `LOCATION:${ev.venue}`,
+        `DESCRIPTION:${ev.description || ev.genre}`,
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = ev.title.replace(/[^a-zA-Z0-9]/g,'_') + '.ics';
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     function toggleAttended() {
