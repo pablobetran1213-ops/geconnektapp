@@ -1168,9 +1168,10 @@
       </div>
       <div class="content">
         <div class="detail-info-row">
-          <div class="detail-info-card">
+          <div class="detail-info-card" onclick="addToCalendar()" style="cursor:pointer">
             <div class="detail-info-icon">📅</div>
             <div class="detail-info-text" id="detail-date"></div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:3px;">+ Calendrier</div>
           </div>
           <div class="detail-info-card">
             <div class="detail-info-icon">🕐</div>
@@ -1181,7 +1182,6 @@
             <div class="detail-info-text" id="detail-venue"></div>
           </div>
         </div>
-        <button class="add-calendar-btn" onclick="addToCalendar()">📅 Ajouter au calendrier</button>
         <div class="detail-price-row">
           <div class="detail-price" id="detail-price"></div>
           <span class="detail-avail-badge" id="detail-avail-badge"></span>
