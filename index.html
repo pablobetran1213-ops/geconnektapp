@@ -142,6 +142,20 @@
       justify-content: space-between;
       align-items: center;
       position: relative;
+      transition: background 0.3s;
+    }
+
+    #phone:not(.dark) .top-header {
+      background: #FFFFFF;
+      border-bottom: 1px solid #E0E0E4;
+    }
+
+    #phone:not(.dark) .app-brand {
+      color: #111111;
+    }
+
+    #phone:not(.dark) .notif-btn {
+      background: rgba(0,0,0,0.06);
     }
 
     .app-brand {
@@ -930,6 +944,14 @@
       margin-bottom: 12px;
       overflow: hidden;
     }
+    /* Lightbox */
+    .lightbox { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:9999; align-items:center; justify-content:center; }
+    .lightbox.open { display:flex; }
+    .lightbox img { max-width:95vw; max-height:90vh; border-radius:10px; object-fit:contain; }
+    .lightbox-close { position:absolute; top:18px; right:20px; font-size:28px; color:#fff; cursor:pointer; line-height:1; }
+    .post-image { cursor:pointer; }
+    .post-avatar[style] { cursor:pointer; }
+
     .post-actions {
       display: flex;
       gap: 22px;
@@ -948,6 +970,21 @@
     .post-action:hover { color: var(--text-primary); }
     .post-action.liked { color: #e0245e; }
     .post-action.reposted { color: #e0245e; }
+    .post-action.commented { color: #4da6ff; }
+    /* Comments section */
+    .post-comments { display: none; border-top: 1px solid var(--border); padding: 10px 0 6px; margin-top: 10px; }
+    .post-comments.open { display: block; }
+    .comment-list { margin-bottom: 6px; }
+    .comment-item { display: flex; gap: 8px; padding: 6px 0; }
+    .comment-item + .comment-item { border-top: 1px solid rgba(255,255,255,0.04); }
+    .comment-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--red); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+    .comment-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+    .comment-text { font-size: 13px; color: var(--text-secondary); margin-top: 2px; line-height: 1.4; }
+    .comment-input-row { display: flex; gap: 8px; align-items: center; padding-top: 6px; border-top: 1px solid var(--border); }
+    .comment-input { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: 20px; padding: 8px 14px; color: var(--text-primary); font-size: 13px; outline: none; font-family: inherit; }
+    .comment-input::placeholder { color: var(--text-muted); }
+    .comment-input:focus { border-color: var(--red); }
+    .comment-send { width: 32px; height: 32px; border-radius: 50%; background: var(--red); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     /* Attended / concert history */
     .add-calendar-btn {
       display: inline-flex;
@@ -1110,16 +1147,17 @@
         </div>
       </div>
       <div class="search-bar-wrap">
-        <input type="text" placeholder="Rechercher un artiste, lieu…" />
+        <input type="text" id="search-input" placeholder="Rechercher un artiste, lieu…" oninput="renderEvents()" />
       </div>
       <div class="filter-chips">
-        <div class="chip active">Tous</div>
-        <div class="chip">Concert</div>
-        <div class="chip">Electronic</div>
-        <div class="chip">Hip-Hop</div>
-        <div class="chip">Jazz</div>
-        <div class="chip">Rock</div>
-        <div class="chip">Pop</div>
+        <div class="chip active" onclick="setFilter('tous', this)">Tous</div>
+        <div class="chip" onclick="setFilter('concert', this)">Concert</div>
+        <div class="chip" onclick="setFilter('club', this)">Club</div>
+        <div class="chip" onclick="setFilter('electronic', this)">Electronic</div>
+        <div class="chip" onclick="setFilter('hip-hop', this)">Hip-Hop</div>
+        <div class="chip" onclick="setFilter('jazz', this)">Jazz</div>
+        <div class="chip" onclick="setFilter('rock', this)">Rock</div>
+        <div class="chip" onclick="setFilter('pop', this)">Pop</div>
       </div>
       
       <div class="content" id="home-content">
@@ -1493,32 +1531,25 @@
           <div class="notif-btn" onclick="showScreen('screen-notif')">🔔</div>
         </div>
       </div>
-      <div class="filter-chips" style="padding:10px 16px 4px;overflow-x:auto;display:flex;gap:8px;flex-wrap:nowrap;">
-        <div class="chip active">Tout</div>
-        <div class="chip">Annonce</div>
-        <div class="chip">Artiste</div>
-        <div class="chip">Festival</div>
-      </div>
       <div class="content" id="feed-content" style="padding:0;">
 
         <!-- Post 1 -->
         <div class="post-card">
           <div class="post-header">
-            <div class="post-avatar">🎪</div>
+            <div class="post-avatar" style="background:none;padding:0;overflow:hidden;"><img src="Logo.Paleo.WEBP" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
             <div>
               <div class="post-username">Paléo Festival</div>
               <div class="post-time">Il y a 2h</div>
             </div>
           </div>
-          <div class="post-tag">Festival</div>
           <div class="post-text">🚨 Le programme du <strong>Paléo Festival 2026</strong> est officiel ! Gorillaz, Orelsan, Katy Perry, The Offspring et Lorde sur la Grande Scène. Nyon, 21–26 juillet. 🔥</div>
-          <div class="post-image" style="background:linear-gradient(135deg,#1a0a2e,#4a0080)">🎪</div>
+          <div class="post-image" style="background:#000;padding:0;overflow:hidden;"><img src="Programme.Paleo.jpg" style="width:100%;height:100%;object-fit:cover;"></div>
           <div class="post-actions">
             <div class="post-action" onclick="toggleLike(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
               <span>847</span>
             </div>
-            <div class="post-action">
+            <div class="post-action" onclick="toggleComments(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span>93</span>
             </div>
@@ -1532,21 +1563,20 @@
         <!-- Post 2 -->
         <div class="post-card">
           <div class="post-header">
-            <div class="post-avatar">🎤</div>
+            <div class="post-avatar" style="background:none;padding:0;overflow:hidden;"><img src="fares.jpg" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
             <div>
               <div class="post-username">Fares</div>
               <div class="post-time">Il y a 1j</div>
             </div>
           </div>
-          <div class="post-tag">Artiste</div>
-          <div class="post-text">🥇 <strong>Fares</strong> vient de faire certifier son album <em>BLOSSOM</em> disque d'or en Suisse. Le rappeur genevois continue son ascension, à suivre de près sur la scène locale. 🎶</div>
-          <div class="post-image" style="background:linear-gradient(135deg,#0d1a0d,#1a4a1a)">🎤</div>
+          <div class="post-text">🌸 <strong>BLOSSOM</strong> est officiellement sorti ! La Release Party organisée par <strong>Ge Connekt</strong> à la Fonderie Kugler s'est passée dans une ambiance incroyable. Merci à tous ceux qui étaient là. 🙏🔥</div>
+          <div class="post-image" style="background:#111;padding:0;overflow:hidden;"><img src="Faresparty.JPG" style="width:100%;height:100%;object-fit:cover;"></div>
           <div class="post-actions">
             <div class="post-action" onclick="toggleLike(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
               <span>512</span>
             </div>
-            <div class="post-action">
+            <div class="post-action" onclick="toggleComments(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span>47</span>
             </div>
@@ -1562,18 +1592,20 @@
           <div class="post-header">
             <div class="post-avatar">🎵</div>
             <div>
-              <div class="post-username">Fête de la Musique</div>
+              <div class="post-username">Ge Connekt</div>
               <div class="post-time">Il y a 2j</div>
             </div>
           </div>
-          <div class="post-tag">Annonce</div>
-          <div class="post-text">📅 C'est confirmé ! La <strong>Fête de la Musique 2026</strong> se tiendra le <strong>20 juin</strong> à Genève avec 3 scènes gratuites à travers la ville. Entrée libre pour tout le monde. 🎉</div>
+          <div class="post-text">🎤 <strong>Ge Connekt</strong> revient pour la Fête de la Musique avec un son <strong>Cypher</strong> — Al-Walid, Wito, Noam Antonio, Di-meh, Geule Blansh, L7, Estée & Mvlcolm. L'année dernière, ça a donné ça 👇</div>
+          <div style="border-radius:14px;overflow:hidden;margin-bottom:12px;background:#000;">
+            <video controls playsinline preload="auto" style="width:100%;display:block;" onclick="event.stopPropagation()"><source src="Cypher.mp4" type="video/mp4"><source src="Cypher.mov" type="video/quicktime"></video>
+          </div>
           <div class="post-actions">
             <div class="post-action" onclick="toggleLike(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
               <span>388</span>
             </div>
-            <div class="post-action">
+            <div class="post-action" onclick="toggleComments(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span>29</span>
             </div>
@@ -1593,7 +1625,6 @@
               <div class="post-time">Il y a 3j</div>
             </div>
           </div>
-          <div class="post-tag">Annonce</div>
           <div class="post-text">🗓 <strong>L'Usine</strong> dévoile sa programmation d'été avec 20+ artistes confirmés de juin à août. Du metal au jazz en passant par l'électro — un été chargé du côté des Bains. 🎛</div>
           <div class="post-image" style="background:linear-gradient(135deg,#1a000d,#4a0028)">🏛</div>
           <div class="post-actions">
@@ -1601,7 +1632,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
               <span>276</span>
             </div>
-            <div class="post-action">
+            <div class="post-action" onclick="toggleComments(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span>34</span>
             </div>
@@ -1621,7 +1652,6 @@
               <div class="post-time">Il y a 4j</div>
             </div>
           </div>
-          <div class="post-tag">Concert</div>
           <div class="post-text">🤘 <strong>Hollywood Undead</strong> de retour à Genève ! La formation américaine jouera à <strong>L'Alhambra le 23 juin</strong>. Billets disponibles sur Petzi — places limitées. 🎫</div>
           <div class="post-image" style="background:linear-gradient(135deg,#001a1a,#004a4a)">🎸</div>
           <div class="post-actions">
@@ -1629,7 +1659,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
               <span>193</span>
             </div>
-            <div class="post-action">
+            <div class="post-action" onclick="toggleComments(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span>21</span>
             </div>
@@ -1649,7 +1679,6 @@
               <div class="post-time">Il y a 5j</div>
             </div>
           </div>
-          <div class="post-tag">Festival</div>
           <div class="post-text">🌞 <strong>Estivale Genève 2026</strong> — Médine, Kendji Girac et d'autres artistes confirmés pour le festival en plein air du <strong>1er août aux Eaux-Vives</strong>. L'été genevois s'annonce chargé ! 🎶</div>
           <div class="post-image" style="background:linear-gradient(135deg,#1a1200,#4a3600)">⭐</div>
           <div class="post-actions">
@@ -1657,7 +1686,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
               <span>431</span>
             </div>
-            <div class="post-action">
+            <div class="post-action" onclick="toggleComments(this)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span>58</span>
             </div>
@@ -2095,6 +2124,38 @@
 
   // ── MAI ──
   {
+    id: 'expedition33-arena',
+    day: '06', month: 'Mai',
+    title: 'Clair Obscur: Expedition 33 – A Painted Symphony',
+    venue: 'Arena de Genève · Le Grand-Saconnex',
+    genre: 'Musique de jeu vidéo / Orchestral',
+    price: 'CHF 34+',
+    tag: '🎮 Concert unique', tagType: 'dispo', emoji: '🎻',
+    gradient: 'linear-gradient(135deg, #001a2a 0%, #003d5c 50%, #006688 100%)',
+    accentColor: '#00aacc',
+    description: 'La bande-son du jeu vidéo phénomène "Clair Obscur: Expedition 33" jouée en live par un orchestre complet à l\'Arena de Genève. Une expérience immersive unique pour les fans du jeu qui a marqué 2025.',
+    tickets: [
+      { type: '🎟 Standard', avail: 'Disponible', price: 'CHF 34' },
+      { type: '🪑 Assis premium', avail: 'Disponible', price: 'CHF 55+' }
+    ]
+  },
+  {
+    id: 'lilly-wood-usine',
+    day: '08', month: 'Mai',
+    title: 'Lilly Wood and The Prick',
+    venue: 'Le Rez – L\'Usine · Genève',
+    genre: 'Indie Folk / Pop',
+    price: 'CHF 25+',
+    tag: '', tagType: 'dispo', emoji: '🎵',
+    gradient: 'linear-gradient(135deg, #0a1a00 0%, #1a3300 50%, #2a5500 100%)',
+    accentColor: '#88dd00',
+    description: 'Lilly Wood and The Prick, le duo franco-israélien connu pour "Prayer in C", de retour sur scène pour une tournée intime et poétique. Folk indie lumineux et textes profonds dans l\'ambiance unique du Rez.',
+    tickets: [
+      { type: '🎟 Prévente', avail: 'Disponible', price: 'CHF 25' },
+      { type: '🎫 Sur place', avail: 'Selon dispo', price: 'CHF 30' }
+    ]
+  },
+  {
     id: 'madball',
     day: '01', month: 'Mai',
     title: 'Madball',
@@ -2326,117 +2387,7 @@
     ]
   },
 
-  // ── JUILLET ──
-  {
-    id: 'paleo-j1',
-    day: '21', month: 'Juillet',
-    title: 'Paléo Festival 2026 – Jour 1',
-    venue: 'Plaine de l\'Asse · Nyon',
-    genre: 'Festival',
-    price: 'CHF 59+',
-    tag: '51e édition',
-    tagType: 'dispo',
-    gradient: 'linear-gradient(135deg, #1a0a00 0%, #3d2000 40%, #7a3d00 70%, #cc6600 100%)',
-    emoji: '🎪',
-    accentColor: '#FFD600',
-    description: 'Le plus grand festival de Suisse ouvre ses portes pour sa 51e édition ! 6 jours de musique sur la Plaine de l\'Asse à Nyon avec plus de 200 artistes sur 7 scènes. Pass journée ou abonnement complet disponibles sur paleo.ch',
-    tickets: [
-      { type: '🎟 Journée', avail: 'Disponible', price: 'CHF 59' },
-      { type: '🎫 Abonnement 6j', avail: 'Disponible', price: 'CHF 295' }
-    ]
-  },
-  {
-    id: 'paleo-gorillaz',
-    day: '22', month: 'Juillet',
-    title: 'Paléo – Gorillaz',
-    venue: 'Plaine de l\'Asse · Nyon',
-    genre: 'Indie / Pop',
-    price: 'CHF 59+',
-    tag: 'Paléo 2026',
-    tagType: 'dispo',
-    gradient: 'linear-gradient(135deg, #001a00 0%, #003300 50%, #005500 100%)',
-    emoji: '🐒',
-    accentColor: '#88cc00',
-    description: 'Gorillaz, le groupe virtuel de Damon Albarn et Jamie Hewlett, headlining Paléo 2026 pour un show audiovisuel spectaculaire. Entre rock alternatif, électro, hip-hop et animations 3D, une expérience live unique en son genre.',
-    tickets: [
-      { type: '🎟 Journée', avail: 'Disponible', price: 'CHF 59' },
-      { type: '🎫 Abonnement 6j', avail: 'Disponible', price: 'CHF 295' }
-    ]
-  },
-  {
-    id: 'paleo-orelsan',
-    day: '23', month: 'Juillet',
-    title: 'Paléo – Orelsan + Gims',
-    venue: 'Plaine de l\'Asse · Nyon',
-    genre: 'Rap / Urban',
-    price: 'CHF 59+',
-    tag: '🔥 Paléo 2026',
-    tagType: 'sold',
-    gradient: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a00 50%, #3d3d00 100%)',
-    emoji: '🎤',
-    accentColor: '#FFD600',
-    description: 'La soirée rap de Paléo : Orelsan, monstre sacré du rap français, et Gims se partagent la scène principale. Deux visions du rap français, deux générations, une nuit extraordinaire sur la Plaine de l\'Asse.',
-    tickets: [
-      { type: '🎟 Journée', avail: 'Limité', price: 'CHF 59' },
-      { type: '🎫 Abonnement 6j', avail: 'Disponible', price: 'CHF 295' }
-    ]
-  },
-  {
-    id: 'paleo-top',
-    day: '24', month: 'Juillet',
-    title: 'Paléo – Twenty One Pilots',
-    venue: 'Plaine de l\'Asse · Nyon',
-    genre: 'Rock / Pop',
-    price: 'CHF 59+',
-    tag: 'Paléo 2026',
-    tagType: 'dispo',
-    gradient: 'linear-gradient(135deg, #0a001a 0%, #1a003d 50%, #33006b 100%)',
-    emoji: '🥁',
-    accentColor: '#aa44ff',
-    description: 'Twenty One Pilots, duo de Columbus Ohio, débarque à Paléo avec leur show interactif hors du commun. Entre rock alternatif, électro et pop, Tyler Joseph et Josh Dun offrent l\'une des performances live les plus impressionnantes de leur génération.',
-    tickets: [
-      { type: '🎟 Journée', avail: 'Disponible', price: 'CHF 59' },
-      { type: '🎫 Abonnement 6j', avail: 'Disponible', price: 'CHF 295' }
-    ]
-  },
-  {
-    id: 'paleo-katy',
-    day: '25', month: 'Juillet',
-    title: 'Paléo – Katy Perry',
-    venue: 'Plaine de l\'Asse · Nyon',
-    genre: 'Pop',
-    price: 'CHF 59+',
-    tag: 'Paléo 2026',
-    tagType: 'dispo',
-    gradient: 'linear-gradient(135deg, #1a001a 0%, #3d0050 50%, #6b008b 100%)',
-    emoji: '🍭',
-    accentColor: '#ff44cc',
-    description: 'Katy Perry, l\'une des artistes pop les plus vendues au monde, revient sur scène avec ses mega-hits. Costumes extravagants, décors spectaculaires et hits enchaînés sans temps mort — un show pop total.',
-    tickets: [
-      { type: '🎟 Journée', avail: 'Disponible', price: 'CHF 59' },
-      { type: '🎫 Abonnement 6j', avail: 'Disponible', price: 'CHF 295' }
-    ]
-  },
-  {
-    id: 'paleo-lorde',
-    day: '26', month: 'Juillet',
-    title: 'Paléo – Lorde + The Cure',
-    venue: 'Plaine de l\'Asse · Nyon',
-    genre: 'Pop / Rock',
-    price: 'CHF 59+',
-    tag: 'Paléo 2026',
-    tagType: 'dispo',
-    gradient: 'linear-gradient(135deg, #000a1a 0%, #001a3d 50%, #002d66 100%)',
-    emoji: '🌙',
-    accentColor: '#4488ff',
-    description: 'Clôture grandiose de Paléo 2026 avec Lorde, icône de la pop alternative, et The Cure, légende du rock gothique. Deux artistes cultes, deux univers distincts pour une nuit finale inoubliable.',
-    tickets: [
-      { type: '🎟 Journée', avail: 'Disponible', price: 'CHF 59' },
-      { type: '🎫 Abonnement 6j', avail: 'Disponible', price: 'CHF 295' }
-    ]
-  },
-
-  // ── AOÛT ──
+  // ── JUILLET / AOÛT ──
   {
     id: 'estivale-youss',
     day: '29', month: 'Juillet',
@@ -2493,22 +2444,383 @@
   },
   {
     id: 'estivale-kendji',
-    day: '01', month: 'Août',
-    title: 'Kendji Girac + L\'Impératrice',
+    day: '30', month: 'Juillet',
+    title: 'Kendji Girac · L\'Impératrice · Tiakola · Vald',
     venue: 'Estivale Open Air · Estavayer',
-    genre: 'Pop / Électro',
+    genre: 'Pop / Rap / Électro',
     price: 'CHF 50+',
     tag: 'Estivale 2026',
     tagType: 'dispo',
     gradient: 'linear-gradient(135deg, #001a0a 0%, #003322 50%, #005544 100%)',
     emoji: '🎸',
     accentColor: '#00cc88',
-    description: 'L\'Impératrice, reine française de la disco-pop, et Kendji Girac, chanteur pop-gitane aux millions de fans, s\'enchaînent pour fermer l\'Estivale 2026 en beauté. Ambiance festive garantie au bord du lac.',
+    description: 'La nuit la plus éclectique de l\'Estivale : Kendji Girac (pop gitane), L\'Impératrice (disco-pop), Tiakola (afro-pop) et Vald (rap décalé) se succèdent sur la scène au bord du lac de Neuchâtel.',
     tickets: [
       { type: '🎟 Journée', avail: 'Disponible', price: 'CHF 50' },
       { type: '🎫 Pass 4 jours', avail: 'Disponible', price: 'CHF 160' }
     ]
-  }
+  },
+
+  // ── AVRIL (nouveaux) ──
+  {
+    id: 'steel-pulse-alhambra',
+    day: '07', month: 'Avril',
+    title: 'Steel Pulse – Reggae Roots Legends',
+    venue: "Salle de l'Alhambra · Genève",
+    genre: 'Reggae',
+    price: 'CHF 34+',
+    tag: '', tagType: 'dispo', emoji: '🌿',
+    gradient: 'linear-gradient(135deg,#001100,#006600)',
+    description: "Steel Pulse, la légende britannique du reggae roots, s'arrête à l'Alhambra de Genève. Un concert chargé d'histoire mêlant reggae, rock et R&B."
+  },
+  {
+    id: 'assassin-usine',
+    day: '10', month: 'Avril',
+    title: "ASSASSIN (Rockin'Squat)",
+    venue: "Le Rez – L'Usine · Genève",
+    genre: 'Rap / Hip-Hop',
+    price: 'CHF 25',
+    tag: '', tagType: 'dispo', emoji: '🎤',
+    gradient: 'linear-gradient(135deg,#0a0000,#3d0000)',
+    description: "Mené par Rockin' Squat, Assassin est le pionnier du rap conscient et indépendant français. Old school, rythmes lourds et textes percutants au Rez-Usine."
+  },
+  {
+    id: 'dubquake-2026',
+    day: '24', month: 'Avril',
+    title: 'Dubquake Festival – 20ème Anniversaire',
+    venue: "L'Usine (Rez · Zoo · Douze) · Genève",
+    genre: 'Reggae / Dub',
+    price: 'CHF 30+',
+    tag: '', tagType: 'dispo', emoji: '🔊',
+    gradient: 'linear-gradient(135deg,#001a00,#005c1a)',
+    description: "Édition anniversaire du Dubquake Festival : 20 ans de sound system légendaires à L'Usine ! Sur 3 salles, O.B.F Sound System, King Earthquake et Iration Steppas font trembler les murs. 23h–6h."
+  },
+  // ── MAI (nouveaux) ──
+  {
+    id: 'kpop-fever-arena',
+    day: '17', month: 'Mai',
+    title: 'K-Pop Fever',
+    venue: 'Arena de Genève · Le Grand-Saconnex',
+    genre: 'K-Pop',
+    price: 'CHF 63+',
+    tag: '', tagType: 'dispo', emoji: '⭐',
+    gradient: 'linear-gradient(135deg,#1a001a,#cc00cc)',
+    description: "K-POP FEVER à l'Arena de Genève : un spectacle immersif avec les hits de BTS, BLACKPINK et bien d'autres. Performers, lumières, visuels époustouflants."
+  },
+  {
+    id: 'zucchero-arena',
+    day: '21', month: 'Mai',
+    title: 'Zucchero – World Tour 2026',
+    venue: 'Arena de Genève · Le Grand-Saconnex',
+    genre: 'Rock / Blues',
+    price: 'CHF 72+',
+    tag: '', tagType: 'dispo', emoji: '🎸',
+    gradient: 'linear-gradient(135deg,#1a0800,#7a3300)',
+    description: "La légende du rock-blues italien Zucchero (60 millions d'albums vendus) s'arrête à Genève dans son World Tour 2026. Des tubes comme 'Senza una donna' et 'Baila' en live."
+  },
+  {
+    id: 'roxane-bruneau-maxime',
+    day: '22', month: 'Mai',
+    title: 'Roxane Bruneau – Tournée Submergé',
+    venue: 'Le Maxime · Genève',
+    genre: 'Pop / Rock',
+    price: 'CHF 38+',
+    tag: '', tagType: 'dispo', emoji: '🎶',
+    gradient: 'linear-gradient(135deg,#001a1a,#006666)',
+    description: "La chanteuse québécoise Roxane Bruneau présente sa tournée 'Submergé' avec plus de 50 000 billets déjà vendus. Une pop rock sincère et puissante."
+  },
+  {
+    id: 'thylacine-alhambra',
+    day: '27', month: 'Mai',
+    title: 'Thylacine – Roads Vol. 3 Tour',
+    venue: "Salle de l'Alhambra · Genève",
+    genre: 'Électro',
+    price: 'CHF 75',
+    tag: '', tagType: 'dispo', emoji: '🌌',
+    gradient: 'linear-gradient(135deg,#000a1a,#002d66)',
+    description: "Thylacine présente 'Roads Vol. 3', son voyage sonore enregistré dans un studio Airstream à travers les paysages du monde. Un électro-cinéma hypnotique."
+  },
+  // ── JUILLET (Paléo, nouveaux) ──
+  {
+    id: 'paleo-twenty-one-pilots',
+    day: '21', month: 'Juillet',
+    title: 'Paléo – Twenty One Pilots · Lorde · Asaf Avidan',
+    venue: "Plaine de l'Asse · Nyon",
+    genre: 'Rock Alternatif / Pop',
+    price: 'CHF 80+',
+    tag: '', tagType: 'dispo', emoji: '🎪',
+    gradient: 'linear-gradient(135deg,#1a0a00,#cc6600)',
+    description: "Ouverture du Paléo 2026 avec Twenty One Pilots (Grammy Award), Lorde et Asaf Avidan. Un show XXL sur la Grande Scène du festival de Nyon."
+  },
+  {
+    id: 'paleo-the-cure',
+    day: '22', month: 'Juillet',
+    title: 'Paléo – The Cure · Feu! Chatterton · The Young Gods',
+    venue: "Plaine de l'Asse · Nyon",
+    genre: 'Rock / Indie',
+    price: 'CHF 80+',
+    tag: '', tagType: 'dispo', emoji: '🎸',
+    gradient: 'linear-gradient(135deg,#000011,#002266)',
+    description: "The Cure pour leur 5ème apparition légendaire au Paléo depuis 1985. Robert Smith et ses compères accompagnés de Feu! Chatterton et des Genevois The Young Gods."
+  },
+  {
+    id: 'paleo-gims',
+    day: '26', month: 'Juillet',
+    title: 'Paléo – GIMS · ZAZ · Bob Sinclar · Timmy Trumpet',
+    venue: "Plaine de l'Asse · Nyon",
+    genre: 'Rap / Pop / Électro',
+    price: 'CHF 80+',
+    tag: '', tagType: 'dispo', emoji: '🎵',
+    gradient: 'linear-gradient(135deg,#1a0a00,#E8001C)',
+    description: "Le dimanche de clôture du Paléo 2026 avec GIMS, ZAZ, Bob Sinclar et Timmy Trumpet. Un final en feu d'artifice musical pour la 49ème édition du festival de Nyon."
+  },
+  // ── OCTOBRE ──
+  {
+    id: 'jazzy-bazz-usine',
+    day: '17', month: 'Octobre',
+    title: 'Jazzy Bazz',
+    venue: "Le Rez – L'Usine · Genève",
+    genre: 'Rap / Hip-Hop',
+    price: 'CHF 35',
+    tag: '', tagType: 'dispo', emoji: '🎤',
+    gradient: 'linear-gradient(135deg,#0a001a,#33006b)',
+    description: "Jazzy Bazz (L'Entourage/Grande Ville), figure du rap hexagonal, présente son album IVAN au Rez-Usine. Flow jazzy et textes ciselés dans la salle culte de Genève."
+  },
+  {
+    id: 'sch-arena',
+    day: '31', month: 'Octobre',
+    title: 'SCH',
+    venue: 'Arena de Genève · Le Grand-Saconnex',
+    genre: 'Rap / Hip-Hop',
+    price: 'CHF 55+',
+    tag: '', tagType: 'dispo', emoji: '🎤',
+    gradient: 'linear-gradient(135deg,#0a0a0a,#E8001C)',
+    description: "SCH, l'un des rappeurs les plus influents de sa génération, investit l'Arena de Genève. Flow cinématographique, univers sombre et mélodique pour un show à grande échelle."
+  },
+  // ── NOVEMBRE ──
+  {
+    id: 'orelsan-arena-nov',
+    day: '19', month: 'Novembre',
+    title: 'Orelsan – Date supplémentaire',
+    venue: 'Arena de Genève · Le Grand-Saconnex',
+    genre: 'Rap / Hip-Hop',
+    price: 'CHF 57+',
+    tag: 'Date ajoutée', tagType: 'dispo', emoji: '🎤',
+    gradient: 'linear-gradient(135deg,#111,#3d1a00)',
+    description: "Suite au sold-out express, Orelsan ajoute une deuxième date à l'Arena de Genève le 19 novembre 2026. La date pour ceux qui ont raté la première."
+  },
+  {
+    id: 'bigflo-oli-arena',
+    day: '29', month: 'Novembre',
+    title: 'Bigflo & Oli – Karma Tour',
+    venue: 'Arena de Genève · Le Grand-Saconnex',
+    genre: 'Rap / Hip-Hop',
+    price: 'CHF 59+',
+    tag: '', tagType: 'dispo', emoji: '🎤',
+    gradient: 'linear-gradient(135deg,#1a0a00,#7a3d00)',
+    description: "Bigflo & Oli reviennent à l'Arena de Genève avec le Karma Tour, leur 5ème album studio. Après 10 ans de carrière, les frères toulousains aux sources d'un rap pur et sincère."
+  },
+  // ── MARS (suite) ──
+  {
+    id: 'josman-arena',
+    day: '28', month: 'Mars',
+    title: 'Josman – Tournée 2026',
+    venue: 'Arena de Genève · Le Grand-Saconnex',
+    genre: 'Rap / Hip-Hop',
+    price: 'CHF 55+',
+    tag: '', tagType: 'dispo', emoji: '🎤',
+    gradient: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2a 50%, #2a1a3a 100%)',
+    accentColor: '#cc88ff',
+    description: 'Josman, l\'un des rappeurs les plus attendus de sa génération (flow cristallin, collabs SCH, Hamza, Laylow), investit l\'Arena de Genève. Après avoir sold-out l\'Accor Arena en 2024, il revient sur scène pour une tournée monumentale.',
+    tickets: [
+      { type: '🎟 Debout', avail: 'Disponible', price: 'CHF 55' },
+      { type: '🪑 Gradin', avail: 'Disponible', price: 'CHF 65' },
+      { type: '⭐ VIP', avail: 'Limité', price: 'CHF 105' }
+    ]
+  },
+
+  // ── AVRIL (suite) ──
+  {
+    id: 'beat-hit-usine',
+    day: '04', month: 'Avril',
+    title: 'Beat Hit – Ärsenik · Sinik · Masta · Double Pact',
+    venue: 'PTR – L\'Usine · Genève',
+    genre: 'Rap / Hip-Hop',
+    price: 'CHF 35+',
+    tag: '', tagType: 'dispo', emoji: '🎤',
+    gradient: 'linear-gradient(135deg, #0a0000 0%, #1a0010 50%, #3d0020 100%)',
+    accentColor: '#ff2255',
+    description: 'Une nuit rap old school absolument culte au PTR : Ärsenik (Calbo & Oxmo Puccino), Sinik, Masta et Double Pact sur scène. Pour les puristes du rap français des années 2000 et les nouvelles générations. TCO Prod & PTR présentent.',
+    tickets: [
+      { type: '🎟 Préloc', avail: 'Disponible', price: 'CHF 35' },
+      { type: '🎫 Caisse', avail: 'Selon dispo', price: 'CHF 40' }
+    ]
+  },
+  {
+    id: 'la-mano-alhambra',
+    day: '02', month: 'Avril',
+    title: 'La Mano 1.9',
+    venue: 'Alhambra · Genève',
+    genre: 'Rap / Hip-Hop',
+    price: 'CHF 55',
+    tag: 'Voix de Fête', tagType: 'dispo', emoji: '🎤',
+    gradient: 'linear-gradient(135deg, #0a0000 0%, #2a0010 50%, #4a0020 100%)',
+    accentColor: '#ff4466',
+    description: 'La Mano 1.9, Révélation masculine de l\'année aux Flammes 2025 et numéro 1 en France avec "Parisienne", débarque à l\'Alhambra dans le cadre de Voix de Fête. Flow hypnotique, univers 19ème et rap authentique.',
+    tickets: [
+      { type: '🎟 Debout', avail: 'Places dispo', price: 'CHF 55' }
+    ]
+  },
+
+  // ── JUILLET / PALÉO ──
+  {
+    id: 'paleo-gorillaz',
+    day: '23', month: 'Juillet',
+    title: 'Paléo – Gorillaz · Theodora · Disiz · Amelie Lens',
+    venue: "Plaine de l'Asse · Nyon",
+    genre: 'Alternatif / Électro',
+    price: 'CHF 80+',
+    tag: '', tagType: 'dispo', emoji: '🎪',
+    gradient: 'linear-gradient(135deg, #001a00 0%, #004400 50%, #006600 100%)',
+    accentColor: '#00cc44',
+    description: 'Gorillaz, le groupe virtuel de Damon Albarn, headlining le jeudi du Paléo 2026. Entre trip-hop, electro et art visuel, un live unique accompagné de Theodora, Disiz et Amelie Lens. Programmation jeudi 23 juillet.',
+    tickets: [
+      { type: '🎟 Journée', avail: 'Disponible', price: 'CHF 80' },
+      { type: '🎫 Pass 6 jours', avail: 'Disponible', price: 'CHF 390' }
+    ]
+  },
+  {
+    id: 'paleo-orelsan',
+    day: '24', month: 'Juillet',
+    title: 'Paléo – Orelsan · Julien Clerc · Keny Arkana · Yamê',
+    venue: "Plaine de l'Asse · Nyon",
+    genre: 'Rap / Pop / Chanson',
+    price: 'CHF 80+',
+    tag: '', tagType: 'dispo', emoji: '🎙',
+    gradient: 'linear-gradient(135deg, #1a1a00 0%, #333300 50%, #4d4d00 100%)',
+    accentColor: '#dddd00',
+    description: 'Vendredi soir au Paléo : Orelsan en headliner, l\'un des plus grands rappeurs français de sa génération. À ses côtés, Julien Clerc, Keny Arkana et Yamê. Une nuit entre rap, chanson française et soul pour tous les âges.',
+    tickets: [
+      { type: '🎟 Journée', avail: 'Disponible', price: 'CHF 80' },
+      { type: '🎫 Pass 6 jours', avail: 'Disponible', price: 'CHF 390' }
+    ]
+  },
+  {
+    id: 'paleo-katy',
+    day: '25', month: 'Juillet',
+    title: 'Paléo – Katy Perry · Vanessa Paradis · Vald',
+    venue: "Plaine de l'Asse · Nyon",
+    genre: 'Pop / Rap',
+    price: 'CHF 80+',
+    tag: '', tagType: 'dispo', emoji: '⭐',
+    gradient: 'linear-gradient(135deg, #1a0030 0%, #4400aa 50%, #cc00ff 100%)',
+    accentColor: '#cc00ff',
+    description: 'Katy Perry en unique date suisse du Lifetimes Tour. La pop star mondiale débarque sur la Grande Scène du Paléo le samedi, accompagnée de Vanessa Paradis et Vald × Vladimir Cauchemar. Nuit explosive garantie.',
+    tickets: [
+      { type: '🎟 Journée', avail: 'Disponible', price: 'CHF 80' },
+      { type: '🎫 Pass 6 jours', avail: 'Disponible', price: 'CHF 390' }
+    ]
+  },
+
+  // ── SEPTEMBRE ──
+  {
+    id: 'angelique-kidjo-alhambra',
+    day: '22', month: 'Septembre',
+    title: 'Angélique Kidjo',
+    venue: 'Alhambra · Genève',
+    genre: 'World / Afrobeat',
+    price: 'CHF 40+',
+    tag: '', tagType: 'dispo', emoji: '🌍',
+    gradient: 'linear-gradient(135deg, #1a0a00 0%, #3d1a00 50%, #7a3300 100%)',
+    accentColor: '#ff8800',
+    description: 'Angélique Kidjo, icône mondiale de la musique africaine et 4 fois lauréate du Grammy Award, s\'arrête à l\'Alhambra de Genève. Afrobeat, funk et énergie scénique incomparable pour l\'une des plus grandes voix du monde.',
+    tickets: [
+      { type: '🎟 Standard', avail: 'Places dispo', price: 'CHF 40' },
+      { type: '🪑 Assis', avail: 'Places dispo', price: 'CHF 55' }
+    ]
+  },
+
+  // ── OCTOBRE (suite) ──
+  {
+    id: 'autechre-usine',
+    day: '12', month: 'Octobre',
+    title: 'Autechre',
+    venue: 'PTR – L\'Usine · Genève',
+    genre: 'Électro / Expérimental',
+    price: 'CHF 35+',
+    tag: 'Festival PTR', tagType: 'dispo', emoji: '🔊',
+    gradient: 'linear-gradient(135deg, #000011 0%, #000033 50%, #000055 100%)',
+    accentColor: '#3344ff',
+    description: 'Autechre, duo britannique légendaire de l\'électronique expérimentale (Warp Records), en concert au PTR dans le cadre du Festival. Textures sonores complexes, algorithmes et sons impossibles — une expérience pour les initiés et les curieux.',
+    tickets: [
+      { type: '🎟 Entrée', avail: 'Disponible', price: 'CHF 35' }
+    ]
+  },
+  {
+    id: 'meryl-alhambra',
+    day: '10', month: 'Octobre',
+    title: 'Meryl',
+    venue: 'Alhambra · Genève',
+    genre: 'Rap / R&B',
+    price: 'CHF 45+',
+    tag: '', tagType: 'dispo', emoji: '🎤',
+    gradient: 'linear-gradient(135deg, #1a0030 0%, #3d007a 50%, #7700cc 100%)',
+    accentColor: '#9933ff',
+    description: 'Meryl, révélation féminine du rap français nommée aux Flammes et aux Victoires, s\'arrête à l\'Alhambra avant son Accor Arena de Paris. Rap puissant et textes ciselés pour l\'une des voix les plus importantes de sa génération.',
+    tickets: [
+      { type: '🎟 Standard', avail: 'Places dispo', price: 'CHF 45' }
+    ]
+  },
+
+  // ── NOVEMBRE (suite) ──
+  {
+    id: 'sch-arena-nov',
+    day: '07', month: 'Novembre',
+    title: 'SCH – Date supplémentaire',
+    venue: 'Arena de Genève · Le Grand-Saconnex',
+    genre: 'Rap / Hip-Hop',
+    price: 'CHF 55+',
+    tag: 'Date ajoutée', tagType: 'dispo', emoji: '🎤',
+    gradient: 'linear-gradient(135deg, #0a0a0a 0%, #E8001C 100%)',
+    accentColor: '#E8001C',
+    description: 'Suite au succès de la date du 31 octobre, SCH ajoute une deuxième soirée à l\'Arena de Genève le 7 novembre. Flow cinématographique, univers sombre et mélodique pour ceux qui ont raté la première date.',
+    tickets: [
+      { type: '🎟 Debout', avail: 'Disponible', price: 'CHF 55' },
+      { type: '🪑 Gradin', avail: 'Disponible', price: 'CHF 65' }
+    ]
+  },
+
+  // ── DÉCEMBRE ──
+  {
+    id: 'plk-arena',
+    day: '11', month: 'Décembre',
+    title: 'PLK – Tour 2026',
+    venue: 'Arena de Genève · Le Grand-Saconnex',
+    genre: 'Rap / Hip-Hop',
+    price: 'CHF 65+',
+    tag: '', tagType: 'dispo', emoji: '🎤',
+    gradient: 'linear-gradient(135deg, #000a1a 0%, #001a3d 50%, #003380 100%)',
+    accentColor: '#0066ff',
+    description: 'PLK, l\'un des rappeurs les plus écoutés au monde, débarque à l\'Arena de Genève. Après avoir sold-out deux Stade de France en moins de deux heures, le rappeur présente son nouveau projet dans un show XXL. Soldout Productions & TCO Prod présentent.',
+    tickets: [
+      { type: '🎟 Debout', avail: 'Disponible', price: 'CHF 65' },
+      { type: '🪑 Gradin', avail: 'Disponible', price: 'CHF 80' },
+      { type: '⭐ VIP', avail: 'Limité', price: 'CHF 105' }
+    ]
+  },
+
+  // ── DÉCEMBRE ──
+  {
+    id: 'feu-chatterton-arena',
+    day: '08', month: 'Décembre',
+    title: 'Feu! Chatterton – Tournée Labyrinthe',
+    venue: 'Arena de Genève · Le Grand-Saconnex',
+    genre: 'Rock / Indie',
+    price: 'CHF 45+',
+    tag: '', tagType: 'dispo', emoji: '🎸',
+    gradient: 'linear-gradient(135deg,#0a0000,#3d0030)',
+    description: "Feu! Chatterton avec l'album 'Labyrinthe' électrise l'Arena de Genève. Le groupe parisien mêlant chanson française et rock pour une soirée d'indie-rock flamboyante."
+  },
 ];
     const TICKET_INFO = {
     // ── Sur place / Entrée libre ──
@@ -2547,12 +2859,9 @@
     'caribana-mika':      { url: 'https://caribana.ch/en', platform: 'Caribana' },
     'caribana-niska':     { url: 'https://caribana.ch/en', platform: 'Caribana' },
     'caribana-lost':      { url: 'https://caribana.ch/en', platform: 'Caribana' },
-    'paleo-j1':           { url: 'https://yeah.paleo.ch/en/tickets', platform: 'Paléo' },
-    'paleo-gorillaz':     { url: 'https://yeah.paleo.ch/en/tickets', platform: 'Paléo' },
-    'paleo-orelsan':      { url: 'https://yeah.paleo.ch/en/tickets', platform: 'Paléo' },
-    'paleo-top':          { url: 'https://yeah.paleo.ch/en/tickets', platform: 'Paléo' },
-    'paleo-katy':         { url: 'https://yeah.paleo.ch/en/tickets', platform: 'Paléo' },
-    'paleo-lorde':        { url: 'https://yeah.paleo.ch/en/tickets', platform: 'Paléo' },
+    'paleo-twenty-one-pilots': { url: 'https://yeah.paleo.ch/en/tickets', platform: 'Paléo' },
+    'paleo-the-cure':     { url: 'https://yeah.paleo.ch/en/tickets', platform: 'Paléo' },
+    'paleo-gims':         { url: 'https://yeah.paleo.ch/en/tickets', platform: 'Paléo' },
     'estivale-youss':     { url: 'https://www.ticketmaster.ch/artist/estivale-open-air-billets/997361', platform: 'Ticketmaster' },
     'estivale-mae':       { url: 'https://www.ticketmaster.ch/artist/estivale-open-air-billets/997361', platform: 'Ticketmaster' },
     'estivale-medine':    { url: 'https://www.ticketmaster.ch/artist/estivale-open-air-billets/997361', platform: 'Ticketmaster' },
@@ -2562,6 +2871,36 @@
     'vdf-tess':           { url: 'https://www.voixdefete.com/acheter-mes-billets-2026/', platform: 'Voix de Fête' },
     'vdf-swift':          { url: 'https://www.voixdefete.com/acheter-mes-billets-2026/', platform: 'Voix de Fête' },
     'vdf-usine':          { url: 'https://www.voixdefete.com/acheter-mes-billets-2026/', platform: 'Voix de Fête' },
+    // ── Nouveaux événements ──
+    'steel-pulse-alhambra':  { url: 'https://www.ticketcorner.ch/en/city/genf-16/', platform: 'Ticketcorner' },
+    'assassin-usine':        { url: 'https://www.petzi.ch/fr/events/60876-kalvingrad-usine-assassin/', platform: 'Petzi' },
+    'dubquake-2026':         { url: 'https://www.petzi.ch/en/events/62818-kalvingrad-usine-dubquake-festival-2026/', platform: 'Petzi' },
+    'kpop-fever-arena':      { url: 'https://www.geneva-arena.ch/fr/events/k-pop-fever/', platform: 'Geneva Arena' },
+    'zucchero-arena':        { url: 'https://www.geneva-arena.ch/fr/events/zucchero', platform: 'Geneva Arena' },
+    'roxane-bruneau-maxime': { url: 'https://www.ticketmaster.ch/concerts/rock-pop/1/events?language=fr-ch', platform: 'Ticketmaster' },
+    'thylacine-alhambra':    { url: 'https://www.ticketcorner.ch/fr/event/thylacine-arena-de-geneve-20315589/', platform: 'Ticketcorner' },
+    'paleo-twenty-one-pilots':{ url: 'https://tickets.paleo.ch/content?lang=fr', platform: 'Paléo Tickets' },
+    'paleo-the-cure':        { url: 'https://tickets.paleo.ch/content?lang=fr', platform: 'Paléo Tickets' },
+    'paleo-gims':            { url: 'https://tickets.paleo.ch/content?lang=fr', platform: 'Paléo Tickets' },
+    'jazzy-bazz-usine':      { url: 'https://www.petzi.ch/fr/events/61085-kalvingrad-usine-jazzy-bazz/', platform: 'Petzi' },
+    'sch-arena':             { url: 'https://www.geneva-arena.ch/fr/events/sch', platform: 'Geneva Arena' },
+    'orelsan-arena-nov':     { url: 'https://www.starticket.ch/en/tickets/orelsan-20261119-1930-arena-geneve', platform: 'Starticket' },
+    'bigflo-oli-arena':      { url: 'https://www.ticketcorner.ch/fr/event/bigflo-oli-arena-de-geneve-21331763/', platform: 'Ticketcorner' },
+    'feu-chatterton-arena':  { url: 'https://www.ticketcorner.ch/event/feu-chatterton-arena-de-geneve-20604193/', platform: 'Ticketcorner' },
+    // ── Nouveaux 2026 ──
+    'beat-hit-usine':        { url: 'https://www.petzi.ch/fr/events/', platform: 'Petzi' },
+    'expedition33-arena':    { url: 'https://www.ticketcorner.ch/en/event/clair-obscur-expedition-33-a-painted-symphony-arena-de-geneve-20994755/', platform: 'Ticketcorner' },
+    'lilly-wood-usine':      { url: 'https://www.petzi.ch/en/events/60728-kalvingrad-usine-lilly-wood-and-the-prick/', platform: 'Petzi' },
+    'angelique-kidjo-alhambra': { url: 'https://www.alhambra-geneve.ch/programme/', platform: 'Alhambra' },
+    'autechre-usine':        { url: 'https://www.petzi.ch/fr/events/', platform: 'Petzi' },
+    'josman-arena':          { url: 'https://www.geneva-arena.ch/fr/events/josman', platform: 'Geneva Arena' },
+    'la-mano-alhambra':      { url: 'https://www.voixdefete.com/artistes/la-mano-1-9/', platform: 'Voix de Fête' },
+    'paleo-gorillaz':        { url: 'https://yeah.paleo.ch/en/tickets', platform: 'Paléo' },
+    'paleo-orelsan':         { url: 'https://yeah.paleo.ch/en/tickets', platform: 'Paléo' },
+    'paleo-katy':            { url: 'https://yeah.paleo.ch/en/tickets', platform: 'Paléo' },
+    'meryl-alhambra':        { url: 'https://www.alhambra-geneve.ch/programme/', platform: 'Alhambra' },
+    'sch-arena-nov':         { url: 'https://www.geneva-arena.ch/fr/events/sch', platform: 'Geneva Arena' },
+    'plk-arena':             { url: 'https://soldoutprod.com/fr/events/plk-arena', platform: 'Soldout Productions' },
   };
     const EVENT_TIMES = {
     'insolation-kugler':  '22h00',   // Portes 22h00 (club électro)
@@ -2608,6 +2947,32 @@
     'estivale-mae':       '20h00',
     'estivale-medine':    '20h00',
     'estivale-kendji':    '20h00',
+    // Nouveaux événements
+    'steel-pulse-alhambra':  '20h00',
+    'assassin-usine':        '21h00',
+    'dubquake-2026':         '23h00',
+    'kpop-fever-arena':      '19h00',
+    'zucchero-arena':        '20h00',
+    'roxane-bruneau-maxime': '20h00',
+    'thylacine-alhambra':    '20h00',
+    'paleo-twenty-one-pilots':'22h30',
+    'paleo-the-cure':        '22h30',
+    'paleo-gims':            '22h30',
+    'jazzy-bazz-usine':      '20h30',
+    'sch-arena':             '20h00',
+    'orelsan-arena-nov':     '19h30',
+    'bigflo-oli-arena':      '20h00',
+    'feu-chatterton-arena':  '20h00',
+    'beat-hit-usine':        '21h00',
+    'expedition33-arena':    '19h00',
+    'lilly-wood-usine':      '20h30',
+    'angelique-kidjo-alhambra': '20h00',
+    'autechre-usine':        '21h00',
+    'josman-arena':          '18h30',
+    'la-mano-alhambra':      '20h00',
+    'meryl-alhambra':        '20h00',
+    'sch-arena-nov':         '21h00',
+    'plk-arena':             '20h00',
   };
     document.getElementById('phone').classList.add('dark');
 
@@ -2729,6 +3094,65 @@
       });
     }
 
+    function toggleComments(el) {
+      const card = el.closest('.post-card');
+      const section = card.querySelector('.post-comments');
+      const isOpen = section.classList.toggle('open');
+      el.classList.toggle('commented', isOpen);
+      if (isOpen) setTimeout(() => section.querySelector('.comment-input').focus(), 80);
+    }
+
+    function getPostId(card) {
+      return 'post-comments-' + Array.from(document.querySelectorAll('.post-card')).indexOf(card);
+    }
+
+    function saveComment(card, text) {
+      const key = getPostId(card);
+      const stored = JSON.parse(localStorage.getItem(key) || '[]');
+      stored.push(text);
+      localStorage.setItem(key, JSON.stringify(stored));
+    }
+
+    function renderSavedComments(card) {
+      const key = getPostId(card);
+      const stored = JSON.parse(localStorage.getItem(key) || '[]');
+      const list = card.querySelector('.comment-list');
+      stored.forEach(text => {
+        const div = document.createElement('div');
+        div.className = 'comment-item';
+        div.innerHTML = `<div class="comment-avatar">👤</div><div><div class="comment-name">Pablo</div><div class="comment-text">${escHtml(text)}</div></div>`;
+        list.appendChild(div);
+      });
+    }
+
+    function postComment(btn) {
+      const section = btn.closest('.post-comments');
+      const card = btn.closest('.post-card');
+      const input = section.querySelector('.comment-input');
+      const text = input.value.trim();
+      if (!text) return;
+      const list = section.querySelector('.comment-list');
+      const div = document.createElement('div');
+      div.className = 'comment-item';
+      div.innerHTML = `<div class="comment-avatar">👤</div><div><div class="comment-name">Pablo</div><div class="comment-text">${escHtml(text)}</div></div>`;
+      list.appendChild(div);
+      saveComment(card, text);
+      // +1 on comment count
+      const commentBtn = card.querySelector('.post-action.commented, .post-action[onclick="toggleComments(this)"]');
+      if (commentBtn) { const sp = commentBtn.querySelector('span'); if (sp) sp.textContent = parseInt(sp.textContent) + 1; }
+      input.value = '';
+      input.focus();
+    }
+
+    function openLightbox(src) {
+      const lb = document.getElementById('lightbox');
+      lb.querySelector('img').src = src;
+      lb.classList.add('open');
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+    }
+
     function toggleLike(el) {
       const isLiked = el.classList.toggle('liked');
       const span = el.querySelector('span');
@@ -2741,7 +3165,29 @@
     function toggleTheme() {
       isDark = !isDark;
       document.getElementById('phone').classList.toggle('dark', isDark);
-      document.querySelectorAll('.toggle-thumb').forEach(el => el).textContent = isDark ? '🌙' : '☀️';
+      document.querySelectorAll('.toggle-thumb').forEach(el => el.textContent = isDark ? '🌙' : '☀️');
+    }
+
+    let currentFilter = 'tous';
+
+    function setFilter(filter, el) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-chips .chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      renderEvents();
+    }
+
+    function matchesFilter(event, filter) {
+      if (filter === 'tous') return true;
+      const g = (event.genre || '').toLowerCase();
+      if (filter === 'concert') return !g.includes('festival') && !g.includes('tous genres');
+      if (filter === 'club') return g.includes('électro') || g.includes('electronic') || g.includes('techno') || g.includes('electro');
+      if (filter === 'electronic') return g.includes('électro') || g.includes('electronic') || g.includes('techno') || g.includes('electro');
+      if (filter === 'hip-hop') return g.includes('hip-hop') || g.includes('rap') || g.includes('urban');
+      if (filter === 'jazz') return g.includes('jazz');
+      if (filter === 'rock') return g.includes('rock') || g.includes('punk') || g.includes('metal') || g.includes('hardcore');
+      if (filter === 'pop') return g.includes('pop');
+      return true;
     }
 
     function renderEvents() {
@@ -2750,12 +3196,19 @@
       const monthOrder = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
       const monthNum = { 'Janvier':1,'Février':2,'Mars':3,'Avril':4,'Mai':5,'Juin':6,'Juillet':7,'Août':8,'Septembre':9,'Octobre':10,'Novembre':11,'Décembre':12 };
       const now = Date.now();
+      const searchQuery = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
       // Hide events where end (midnight day+1) + 24h < now
       const visible = EVENTS.filter(e => {
         const m = monthNum[e.month];
         if (!m) return true;
         const end = new Date(2026, m - 1, parseInt(e.day) + 1, 0, 0, 0).getTime() + 24*60*60*1000;
-        return end > now;
+        if (end <= now) return false;
+        if (!matchesFilter(e, currentFilter)) return false;
+        if (searchQuery) {
+          const haystack = [e.title, e.venue, e.genre, e.description].join(' ').toLowerCase();
+          return searchQuery.split(' ').every(word => haystack.includes(word));
+        }
+        return true;
       });
       const monthMap = {};
       visible.forEach(event => {
@@ -2789,7 +3242,7 @@
         });
         html += `</div>`;
       });
-      container.innerHTML = html;
+      container.innerHTML = html || '<div style="text-align:center;padding:40px 20px;color:var(--text-muted);font-size:14px;">Aucun événement dans cette catégorie</div>';
     }
 
     function showDetail(id) {
@@ -2861,6 +3314,31 @@
     if (!localStorage.getItem('myAttended')) {
       localStorage.setItem('myAttended', JSON.stringify(['fares-kugler']));
     }
+    // Init comment sections on all feed posts
+    document.querySelectorAll('.post-card').forEach(card => {
+      const section = document.createElement('div');
+      section.className = 'post-comments';
+      section.innerHTML = `<div class="comment-list"></div><div class="comment-input-row"><input class="comment-input" type="text" placeholder="Ajouter un commentaire…" onkeydown="if(event.key==='Enter')postComment(this.nextElementSibling)"><button class="comment-send" onclick="postComment(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div>`;
+      card.appendChild(section);
+      renderSavedComments(card);
+    });
+
+    // Lightbox element
+    const lb = document.createElement('div');
+    lb.id = 'lightbox';
+    lb.className = 'lightbox';
+    lb.innerHTML = '<span class="lightbox-close" onclick="closeLightbox()">✕</span><img src="" alt="">';
+    lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+    document.body.appendChild(lb);
+
+    // Wire up post images and real photo avatars to lightbox
+    document.querySelectorAll('.post-image img').forEach(img => {
+      img.parentElement.onclick = () => openLightbox(img.src);
+    });
+    document.querySelectorAll('.post-avatar img').forEach(img => {
+      img.parentElement.onclick = () => openLightbox(img.src);
+    });
+
     renderEvents();
     loadConcerts();
     showScreen('screen-home');
